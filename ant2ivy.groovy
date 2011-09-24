@@ -1,6 +1,13 @@
 /*
 
-   Copyright [2011] [Mark O'Connor]
+   ant2ivy 
+   -------
+   A script to "kick-start" java projects using the ivy plug-in 
+
+   License
+   -------
+
+   Copyright 2011 Mark O'Connor
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
