@@ -70,7 +70,7 @@ Generates the following files
           <ibiblio name='spring-external' m2compatible='true' root='http://repository.springsource.com/maven/bundles/external' />
         </chain>
         <filesystem name='local'>
-          <artifact pattern='/home/mark/Files/ant2ivy/build/jars/[artifact]' />
+          <artifact pattern='/home/mark/build/jars/[artifact]' />
         </filesystem>
       </resolvers>
       <modules>
