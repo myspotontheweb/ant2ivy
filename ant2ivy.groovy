@@ -113,7 +113,7 @@ class Ant2Ivy {
         def antFile = new File(outputDir, "build.xml")
         def ivyFile = new File(outputDir, "ivy.xml")
         def ivySettingsFile = new File(outputDir, "ivysettings.xml")
-        def localRepo = new File(outputDir, "jars")
+        def localRepo = new File(outputDir, "lib")
         def results = search(inputDir)
 
         //
@@ -122,7 +122,7 @@ class Ant2Ivy {
         log.info "Generating ant file: {} ...", antFile.absolutePath
         def antContent = new MarkupBuilder(antFile.newPrintWriter())
 
-        antContent.project(name: "Sample ivy builde", default:"resolve", "xmlns:ivy":"antlib:org.apache.ivy.ant" ) {
+        antContent.project(name: "Sample ivy build", default:"resolve", "xmlns:ivy":"antlib:org.apache.ivy.ant" ) {
             target(name:"resolve") {
                 "ivy:resolve"()
             }
@@ -163,11 +163,10 @@ class Ant2Ivy {
                 chain(name:"maven-repos") {
                     // TODO: Make this list of Maven repos configurable
                     ibiblio(name:"central", m2compatible:"true")
-                    ibiblio(name:"spring-external", m2compatible:"true", root:"http://repository.springsource.com/maven/bundles/external")
                 }
                 if (results.missing.size() > 0) {
                     filesystem(name:"local") {
-                        artifact(pattern:"${localRepo.absolutePath}/[artifact]")
+                        artifact(pattern:"\${ivysettings.dir}/${localRepo.name}/[artifact]")
                     }
                 }
             }
