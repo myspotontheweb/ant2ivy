@@ -19,6 +19,7 @@ class Test extends GroovyTestCase {
         XMLUnit.setIgnoreWhitespace(true)
         XMLUnit.setIgnoreComments(true)
 
+        ant.mkdir(dir:"downloads")
     }
 
     void tearDown() {
