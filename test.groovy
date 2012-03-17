@@ -24,20 +24,26 @@ class Test extends GroovyTestCase {
 
     void tearDown() {
         ant.delete(dir:"tmp")
-        ant.delete(dir:"tomcat")
+        ant.delete(dir:"work")
     }
 
     void testTomcatDistro() {
         //
         // Download the tomcat distro
         //
-        ant.get(src:"http://www.apache.org/dist/tomcat/tomcat-7/v7.0.26/bin/apache-tomcat-7.0.26.zip", dest:"downloads/tomcat.zip", usetimestamp:"true")
-        ant.unzip(src:"downloads/tomcat.zip", dest:"tmp")
+        ant.get(src:"http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.21/bin/apache-tomcat-7.0.21.zip", dest:"downloads/apache-tomcat-7.0.21.zip", usetimestamp:"true")
+        ant.unzip(src:"downloads/apache-tomcat-7.0.21.zip", dest:"tmp")
 
         //
         // Run the groovy script against tomcat installation
         //
-        "groovy ant2ivy -g com.example -a demo -s tmp/apache-tomcat-7.0.26/lib -t tomcat".execute().waitFor()
+        //def test = "cmd /c groovy ant2ivy -g com.example -a demo -s tmp/apache-tomcat-7.0.21/lib -t work".execute()
+        def test = "groovy ant2ivy -g com.example -a demo -s tmp/apache-tomcat-7.0.21/lib -t work".execute()
+
+        def output = new StringBuffer()
+        test.waitForProcessOutput(output, output)
+
+        assert !test.exitValue() : output
 
         //
         // Check build.xml
@@ -54,7 +60,7 @@ class Test extends GroovyTestCase {
         </project>
         """
 
-        assert new Diff(buildFile, new File("tomcat/build.xml").text).similar()
+        assert new Diff(buildFile, new File("work/build.xml").text).similar()
 
         //
         // Check ivy.xml
@@ -64,30 +70,30 @@ class Test extends GroovyTestCase {
             <info organisation='com.example' module='demo' />
             <configurations defaultconfmapping='default' />
             <dependencies>
-                <dependency org='org.apache.tomcat' name='tomcat-annotations-api' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-catalina-ant' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-catalina-ha' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-tribes' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-catalina' rev='7.0.26' conf='default->master' />
-                <dependency org='org.eclipse.jetty.orbit' name='org.eclipse.jdt.core' rev='3.7.1' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-el-api' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-jasper-el' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-jasper' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-jsp-api' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-servlet-api' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-api' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-coyote' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-dbcp' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-i18n-es' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-i18n-fr' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-i18n-ja' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-jdbc' rev='7.0.26' conf='default->master' />
-                <dependency org='org.apache.tomcat' name='tomcat-util' rev='7.0.26' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-annotations-api' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-catalina-ant' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-catalina-ha' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-tribes' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-catalina' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-el-api' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-jasper-el' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-jasper' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-jsp-api' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-servlet-api' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-api' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-coyote' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-dbcp' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-i18n-es' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-i18n-fr' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-i18n-ja' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-jdbc' rev='7.0.21' conf='default->master' />
+                <dependency org='org.apache.tomcat' name='tomcat-util' rev='7.0.21' conf='default->master' />
+                <dependency org='NA' name='ecj-3.7.jar' rev='NA' />
             </dependencies>
         </ivy-module>
         """
 
-        assert new Diff(ivyFile, new File("tomcat/ivy.xml").text).similar()
+        assert new Diff(ivyFile, new File("work/ivy.xml").text).similar()
 
         //
         // Check ivysettings.xml
@@ -99,11 +105,17 @@ class Test extends GroovyTestCase {
                 <chain name='maven-repos'>
                     <ibiblio name='central' m2compatible='true' />
                 </chain>
+                <filesystem name='local'>
+                    <artifact pattern='\${ivy.settings.dir}/lib/[artifact]' />
+                </filesystem>
             </resolvers>
+            <modules>
+                <module organisation='NA' name='ecj-3.7.jar' resolver='local' />
+            </modules>
         </ivysettings>
         """
 
-        assert new Diff(ivysettingsFile, new File("tomcat/ivysettings.xml").text).similar()
+        assert new Diff(ivysettingsFile, new File("work/ivysettings.xml").text).similar()
     }
 }
 

@@ -46,10 +46,6 @@ class Ant2Ivy {
     String artifactId
     String repoUrl
 
-    Ant2Ivy(groupId, artifactId) {
-        this(groupId, artifactId, "http://repository.sonatype.org")
-    }
-
     Ant2Ivy(groupId, artifactId, repoUrl) {
         this.groupId = groupId
         this.artifactId = artifactId
@@ -166,7 +162,7 @@ class Ant2Ivy {
                 }
                 if (results.missing.size() > 0) {
                     filesystem(name:"local") {
-                        artifact(pattern:"\${ivysettings.dir}/${localRepo.name}/[artifact]")
+                        artifact(pattern:"\${ivy.settings.dir}/${localRepo.name}/[artifact]")
                     }
                 }
             }
@@ -192,6 +188,7 @@ cli.with {
     a longOpt: 'artifactid', args: 1, 'Module artifactid', required: true
     s longOpt: 'sourcedir',  args: 1, 'Source directory containing jars', required: true
     t longOpt: 'targetdir',  args: 1, 'Target directory where write ivy build files', required: true
+    r longOpt: 'nexusUrl',   args: 1, 'Alternative Nexus repository URL'
 }
                                                                 
 def options = cli.parse(args)
@@ -203,9 +200,11 @@ if (options.help) {
     cli.usage()
 }
 
+def nexusUrl = (options.nexusUrl) ? options.nexusUrl : "http://repository.sonatype.org"
+
 // 
 // Generate ivy configuration
 //
-def ant2ivy = new Ant2Ivy(options.groupid, options.artifactid)
+def ant2ivy = new Ant2Ivy(options.groupid, options.artifactid, nexusUrl)
 ant2ivy.generate(new File(options.sourcedir), new File(options.targetdir))
 
