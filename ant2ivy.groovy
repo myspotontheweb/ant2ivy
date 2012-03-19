@@ -119,10 +119,14 @@ class Ant2Ivy {
         def antContent = new MarkupBuilder(antFile.newPrintWriter())
 
         antContent.project(name: "Sample ivy build", default:"resolve", "xmlns:ivy":"antlib:org.apache.ivy.ant" ) {
-            target(name:"resolve") {
+            target(name:"install", description:"Install ivy") {
+                mkdir(dir:"\${user.home}/.ant/lib")
+                get(dest:"\${user.home}/.ant/lib/ivy.jar", src:"http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar")
+            }
+            target(name:"resolve", description:"Resolve 3rd party dependencies") {
                 "ivy:resolve"()
             }
-            target(name:"clean") {
+            target(name:"clean", description:"Remove all build files") {
                 "ivy:cleancache"()
             }
         }
@@ -135,10 +139,14 @@ class Ant2Ivy {
 
         ivyConfig."ivy-module"(version:"2.0") {
             info(organisation:this.groupId, module:this.artifactId) 
-            configurations(defaultconfmapping:"default")
+            configurations(defaultconfmapping:"compile->master(default)") {
+                conf(name:"compile", description:"Compile dependencies")
+                conf(name:"runtime", description:"Runtime dependencies", extends:"compile")
+                conf(name:"test", description:"Test dependencies", extends:"runtime")
+            }
             dependencies() {
                 results.found.each {
-                    dependency(org:it.groupId, name:it.artifactId, rev:it.version, conf:"default->master")
+                    dependency(org:it.groupId, name:it.artifactId, rev:it.version)
                 }
                 results.missing.each {
                     dependency(org:"NA", name:it.file, rev:"NA")
