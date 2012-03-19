@@ -33,33 +33,54 @@ ivy is configured to pull from.
 
 Generates the following files
 
+**build.xml**
+
+    <project name='Sample ivy build' default='resolve' xmlns:ivy='antlib:org.apache.ivy.ant'>
+      <target name='install' description='Install ivy'>
+        <mkdir dir='${user.home}/.ant/lib' />
+        <get dest='${user.home}/.ant/lib/ivy.jar' src='http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar' />
+      </target>
+      <target name='resolve' description='Resolve 3rd party dependencies'>
+        <ivy:resolve />
+      </target>
+      <target name='clean' description='Remove all build files'>
+        <ivy:cleancache />
+      </target>
+    </project>
+
+
 **ivy.xml**
 
     <ivy-module version='2.0'>
       <info organisation='com.example' module='demo' />
-      <configurations defaultconfmapping='default' />
+      <configurations defaultconfmapping='compile-&gt;master(default)'>
+        <conf name='compile' description='Compile dependencies' />
+        <conf name='runtime' description='Runtime dependencies' extends='compile' />
+        <conf name='test' description='Test dependencies' extends='runtime' />
+      </configurations>
       <dependencies>
-       <dependency org='org.apache.tomcat' name='tomcat-annotations-api' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-catalina-ant' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-catalina-ha' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-tribes' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-catalina' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-el-api' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-jasper-el' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-jasper' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-jsp-api' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-servlet-api' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-api' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-coyote' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-dbcp' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-i18n-es' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-i18n-fr' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-i18n-ja' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-jdbc' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='org.apache.tomcat' name='tomcat-util' rev='7.0.21' conf='default-&gt;master' />
-       <dependency org='NA' name='ecj-3.7.jar' rev='NA' />
-     </dependencies>
-   </ivy-module>
+        <dependency org='org.apache.tomcat' name='tomcat-annotations-api' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-catalina-ant' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-catalina-ha' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-tribes' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-catalina' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-el-api' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-jasper-el' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-jasper' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-jsp-api' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-servlet-api' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-api' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-coyote' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-dbcp' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-i18n-es' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-i18n-fr' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-i18n-ja' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-jdbc' rev='7.0.21' />
+        <dependency org='org.apache.tomcat' name='tomcat-util' rev='7.0.21' />
+        <dependency org='NA' name='ecj-3.7.jar' rev='NA' />
+      </dependencies>
+    </ivy-module>
+
 
 **ivysettings.xml**
 
@@ -68,15 +89,13 @@ Generates the following files
       <resolvers>
         <chain name='maven-repos'>
           <ibiblio name='central' m2compatible='true' />
-          <ibiblio name='spring-external' m2compatible='true' root='http://repository.springsource.com/maven/bundles/external' />
         </chain>
         <filesystem name='local'>
-          <artifact pattern='/home/mark/build/jars/[artifact]' />
+          <artifact pattern='${ivy.settings.dir}/lib/[artifact]' />
         </filesystem>
       </resolvers>
       <modules>
         <module organisation='NA' name='ecj-3.7.jar' resolver='local' />
       </modules>
     </ivysettings>
-
 
