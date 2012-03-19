@@ -117,12 +117,17 @@ class Test extends GroovyTestCase {
                 </filesystem>
             </resolvers>
             <modules>
-                <module organisation='NA' name='ecj-3.7.jar' resolver='local' />
+                <module organisation='NA' resolver='local' />
             </modules>
         </ivysettings>
         """
 
         assert new Diff(ivysettingsFile, new File("work/ivysettings.xml").text).similar()
+
+        //
+        // Check unidentified files are setup as ivy repository
+        //
+        assert new File("work/lib/ecj-3.7.jar").exists()
     }
 }
 

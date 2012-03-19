@@ -174,14 +174,16 @@ class Ant2Ivy {
                     }
                 }
             }
-            if (results.missing.size() > 0) {
-                modules() {
-                    results.missing.each {
-                        module(organisation:"NA", name:it.file, resolver:"local")
-                        ant.copy(file:it.fileObj.absolutePath, tofile:"${localRepo.absolutePath}/${it.file}")
-                    }
-                }
+            modules() {
+                module(organisation:"NA", resolver:"local")
             }
+        }
+
+        //
+        // Files which are not identified are saved locally as an ivy repository
+        //
+        results.missing.each {
+             ant.copy(file:it.fileObj.absolutePath, tofile:"${localRepo.absolutePath}/${it.file}")
         }
     }
 }
