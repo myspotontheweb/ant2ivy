@@ -27,12 +27,13 @@
 // ============
 
 import groovy.xml.MarkupBuilder
+import groovy.xml.NamespaceBuilder
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Grapes([
-    @Grab(group='org.slf4j', module='slf4j-simple', version='1.6.2') 
+    @Grab(group='org.slf4j', module='slf4j-simple', version='1.6.6') 
 ])
 
 //
@@ -103,7 +104,7 @@ class Ant2Ivy {
     // ivy.xml          Contains the ivy dependency declarations
     // ivysettings.xml  Resolver configuration
     //
-    def generate(File inputDir, File outputDir) {
+    def generateAnt(File inputDir, File outputDir) {
         outputDir.mkdir()
 
         def antFile = new File(outputDir, "build.xml")
@@ -186,6 +187,19 @@ class Ant2Ivy {
              ant.copy(file:it.fileObj.absolutePath, tofile:"${localRepo.absolutePath}/${it.file}")
         }
     }
+
+    //
+    // Using the generated ivy file create a Maven POM file
+    //
+    def generateMaven(File ivyFile, File outputDir) {
+        def ant = new AntBuilder()
+        def ivy = NamespaceBuilder.newInstance(ant, "antlib:org.apache.ivy.ant")
+        def pomFile = new File(outputDir, "pom.xml")
+
+        ant.property(name:"ivy.pom.version", value:"1.0-SNAPSHOT")
+
+        ivy.makepom(ivyfile:ivyFile.absolutePath, pomFile:pomFile.absolutePath)
+    }
 }
 
 // 
@@ -216,5 +230,9 @@ def nexusUrl = (options.nexusUrl) ? options.nexusUrl : "http://repository.sonaty
 // Generate ivy configuration
 //
 def ant2ivy = new Ant2Ivy(options.groupid, options.artifactid, nexusUrl)
-ant2ivy.generate(new File(options.sourcedir), new File(options.targetdir))
+def srcDir  = new File(options.sourcedir)
+def trgDir  = new File(options.targetdir)
+
+ant2ivy.generateAnt(srcDir, trgDir)
+ant2ivy.generateMaven(new File(trgDir, "ivy.xml"), trgDir)
 
