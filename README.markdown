@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/myspotontheweb/ant2ivy.png?label=ready)](http://waffle.io/myspotontheweb/ant2ivy) 
 
 Introduction
 ============
