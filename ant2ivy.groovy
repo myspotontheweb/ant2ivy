@@ -28,7 +28,7 @@
 
 import groovy.xml.MarkupBuilder
 import groovy.xml.NamespaceBuilder
-
+import groovy.json.JsonSlurper
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,23 +73,22 @@ class Ant2Ivy {
 
         ant.project.references.jars.each {
             def jar = new File(inputDir, it.name)
-
+		
             // Checksum URL
             ant.checksum(file:jar.absolutePath, algorithm:"SHA1", property:jar.name)
-
-            def searchUrl = "${repoUrl}/service/local/data_index?sha1=${ant.project.properties[jar.name]}"
-            log.debug "SearchUrl: {}, File: {}", searchUrl, jar.name
-
+            def searchUrl = "${repoUrl}solrsearch/select?q=1:\"${ant.project.properties[jar.name]}\"&rows=20&wt=json"
+            log.info "SearchUrl: {}, File: {}", searchUrl, jar.name
             // Search for the first result
-            def searchResults = new XmlParser().parseText(searchUrl.toURL().text)
-            def artifact = searchResults.data.artifact[0]
-
-            if (artifact) {
-                log.debug "Found: {}", jar.name
-                results["found"].add([file:jar.name, groupId:artifact.groupId.text(), artifactId:artifact.artifactId.text(), version:artifact.version.text()])
+			def returnpage = new URL(searchUrl).getText()
+			def json = new JsonSlurper().parseText returnpage
+            def artifact = json.response["numFound"]
+            if (artifact == 1) {
+                log.info "Found: {}", jar.name
+                results["found"].add([file:jar.name, groupId:json.response.docs[0]['g'], artifactId:json.response.docs[0]['a'], version:json.response.docs[0]['v']])
             }
+			
             else {
-                log.warn "Not Found: {}", jar.name
+                log.info "Not Found: {}", jar.name
                 results["missing"].add([file:jar.name, fileObj:jar])
             }
         }
@@ -173,11 +172,16 @@ class Ant2Ivy {
                     filesystem(name:"local") {
                         artifact(pattern:"\${ivy.settings.dir}/${localRepo.name}/[artifact]")
                     }
+					
                 }
+				
             }
-            modules() {
-                module(organisation:"NA", resolver:"local")
-            }
+            if (results.missing.size() > 0) {
+				modules() {
+					module(organisation:"NA", resolver:"local")
+				}
+			}
+
         }
 
         //
@@ -186,6 +190,7 @@ class Ant2Ivy {
         results.missing.each {
              ant.copy(file:it.fileObj.absolutePath, tofile:"${localRepo.absolutePath}/${it.file}")
         }
+		print results.missing.size();
     }
 
     //
@@ -212,7 +217,7 @@ cli.with {
     a longOpt: 'artifactid', args: 1, 'Module artifactid', required: true
     s longOpt: 'sourcedir',  args: 1, 'Source directory containing jars', required: true
     t longOpt: 'targetdir',  args: 1, 'Target directory where write ivy build files', required: true
-    r longOpt: 'nexusUrl',   args: 1, 'Alternative Nexus repository URL'
+    r longOpt: 'mavenUrl',   args: 1, 'Alternative Maven repository URL'
 }
                                                                 
 def options = cli.parse(args)
@@ -224,12 +229,12 @@ if (options.help) {
     cli.usage()
 }
 
-def nexusUrl = (options.nexusUrl) ? options.nexusUrl : "http://repository.sonatype.org"
+def mavenUrl = (options.mavenUrl) ? options.mavenUrl : "http://search.maven.org/"
 
 // 
 // Generate ivy configuration
 //
-def ant2ivy = new Ant2Ivy(options.groupid, options.artifactid, nexusUrl)
+def ant2ivy = new Ant2Ivy(options.groupid, options.artifactid, mavenUrl)
 def srcDir  = new File(options.sourcedir)
 def trgDir  = new File(options.targetdir)
 
