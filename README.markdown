@@ -13,7 +13,7 @@ Usage
      -a,--artifactid <arg>   Module artifactid
      -g,--groupid <arg>      Module groupid
      -h,--help               Show usage information
-     -r,--mavenUrl <arg>     Alternative Nexus repository URL
+     -r,--mavenUrl <arg>     Alternative Maven repository URL
      -s,--sourcedir <arg>    Source directory containing jars
      -t,--targetdir <arg>    Target directory where write ivy build files
 
