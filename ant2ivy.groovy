@@ -197,6 +197,7 @@ class Ant2Ivy {
     // Using the generated ivy file create a Maven POM file
     //
     def generateMaven(File ivyFile, File outputDir) {
+        log.info "Generating Maven: pom.xml"
         def ant = new AntBuilder()
         def ivy = NamespaceBuilder.newInstance(ant, "antlib:org.apache.ivy.ant")
         def pomFile = new File(outputDir, "pom.xml")
@@ -204,6 +205,36 @@ class Ant2Ivy {
         ant.property(name:"ivy.pom.version", value:"1.0-SNAPSHOT")
 
         ivy.makepom(ivyfile:ivyFile.absolutePath, pomFile:pomFile.absolutePath)
+    }
+
+    //
+    // Using the generated ivy file create a Gradle file
+    //
+    def generateGradle(File ivyFile, File outputDir) {
+        log.info "Generating Gradle: build.gradle"
+        def gradleFile = new File(outputDir, "build.gradle")
+        def ivyModule = new XmlParser().parse(ivyFile)
+
+        gradleFile.withWriter { out ->
+            ivyModule.info.each {
+                out.println "publishing {"
+                out.println "  publications {"
+                out.println "    maven(MavenPublication) {"
+                out.println "      groupId '${it.@organisation}'"
+                out.println "      artifactId '${it.@module}'"
+                out.println "      version '1.0-SNAPSHOT'"
+                out.println "      from components.java"
+                out.println "    }"
+                out.println "  }"
+                out.println "}"
+            }
+
+            out.println "dependencies {" 
+            ivyModule.dependencies.dependency.each {
+                out.println "  compile '${it.@org}:${it.@name}:${it.@rev}'"
+            }
+            out.println "}"
+        }
     }
 }
 
@@ -240,4 +271,4 @@ def trgDir  = new File(options.targetdir)
 
 ant2ivy.generateAnt(srcDir, trgDir)
 ant2ivy.generateMaven(new File(trgDir, "ivy.xml"), trgDir)
-
+ant2ivy.generateGradle(new File(trgDir, "ivy.xml"), trgDir)
