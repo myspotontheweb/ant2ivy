@@ -76,7 +76,7 @@ class Ant2Ivy {
 		
             // Checksum URL
             ant.checksum(file:jar.absolutePath, algorithm:"SHA1", property:jar.name)
-            def searchUrl = "${repoUrl}solrsearch/select?q=1:\"${ant.project.properties[jar.name]}\"&rows=20&wt=json"
+            def searchUrl = "${repoUrl}solrsearch/select?q=1:%22${ant.project.properties[jar.name]}%22&rows=20&wt=json"
             log.info "SearchUrl: {}, File: {}", searchUrl, jar.name
             // Search for the first result
 			def returnpage = new URL(searchUrl).getText()
