@@ -31,9 +31,11 @@ import groovy.xml.NamespaceBuilder
 import groovy.json.JsonSlurper
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FilenameUtils;
 
 @Grapes([
-    @Grab(group='org.slf4j', module='slf4j-simple', version='1.7.30')
+    @Grab(group='org.slf4j', module='slf4j-simple', version='1.7.30'),
+    @Grab(group='org.apache.directory.studio', module='org.apache.commons.io', version='2.4')
 ])
 
 //
@@ -156,7 +158,7 @@ class Ant2Ivy {
                     dependency(org:it.groupId, name:it.artifactId, rev:it.version)
                 }
                 results.missing.each {
-                    dependency(org:"NA", name:it.file, rev:"NA")
+                    dependency(org:"NA", name:FilenameUtils.removeExtension(it.file), rev:"NA")
                 }
             }
         }
@@ -177,7 +179,7 @@ class Ant2Ivy {
                 }
                 if (results.missing.size() > 0) {
                     filesystem(name:"local") {
-                        artifact(pattern:"\${ivy.settings.dir}/${localRepo.name}/[artifact]")
+                        artifact(pattern:"\${ivy.settings.dir}/${localRepo.name}/[artifact].[ext]")
                     }
 					
                 }
