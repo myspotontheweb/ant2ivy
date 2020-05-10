@@ -35,7 +35,7 @@ import org.apache.commons.io.FilenameUtils;
 
 @Grapes([
     @Grab(group='org.slf4j', module='slf4j-simple', version='1.7.30'),
-    @Grab(group='org.apache.directory.studio', module='org.apache.commons.io', version='2.4')
+    @Grab(group='commons-io', module='commons-io', version='2.6')
 ])
 
 //
