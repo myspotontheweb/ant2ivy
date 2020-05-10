@@ -126,7 +126,14 @@ class Ant2Ivy {
             target(name:"resolve", description:"Resolve 3rd party dependencies") {
                 "ivy:resolve"()
             }
+            target(name:"report", depends:"resolve", description:"Generate a dependency report") {
+                "ivy:report"(conf:"compile", todir:"report", graph:"false", dot:"true")
+            }
+            target(name:"test", depends:"resolve", description:"Test the downloading of dependencies") {
+                "ivy:retrieve"(conf:"compile", pattern:"test/[artifact]-[revision].[ext]")
+            }
             target(name:"clean", description:"Remove all build files") {
+                delete(dir:"report")
                 "ivy:cleancache"()
             }
         }
