@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Grapes([
-    @Grab(group='org.slf4j', module='slf4j-simple', version='1.6.6') 
+    @Grab(group='org.slf4j', module='slf4j-simple', version='1.7.30')
 ])
 
 //
@@ -121,7 +121,7 @@ class Ant2Ivy {
         antContent.project(name: "Sample ivy build", default:"resolve", "xmlns:ivy":"antlib:org.apache.ivy.ant" ) {
             target(name:"install", description:"Install ivy") {
                 mkdir(dir:"\${user.home}/.ant/lib")
-                get(dest:"\${user.home}/.ant/lib/ivy.jar", src:"http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar")
+                get(dest:"\${user.home}/.ant/lib/ivy.jar", src:"http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.5.0/ivy-2.5.0.jar")
             }
             target(name:"resolve", description:"Resolve 3rd party dependencies") {
                 "ivy:resolve"()
