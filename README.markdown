@@ -3,7 +3,7 @@
 Introduction
 ============
 The purpose of this groovy script is to "kick-start" a Java project's use of
-the ivy plugin for ANT.
+the [ivy plugin](https://ant.apache.org/ivy/) for ANT.
 
 Note:
 
@@ -44,7 +44,7 @@ dependencies
 └── pom.xml
 ```
 
-The following files are associated with ANT and the dependency management tool ivy 
+The following files are associated with ANT and the [dependency management tool ivy](https://ant.apache.org/ivy/) 
 
 * build.xml
 * ivy.xml
