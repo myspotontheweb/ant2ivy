@@ -7,7 +7,7 @@ the [ivy plugin](https://ant.apache.org/ivy/) for ANT.
 
 Note:
 
-* This tool can also generate a Maven POM and a Gradle build file, but these tools are limited to dependencies tht can be retrieved from a Maven repostory.
+* This tool can also generate a Maven POM and a Gradle build file, but these tools are limited to dependencies tht can be retrieved from a Maven repository.
 
 Usage
 =====
